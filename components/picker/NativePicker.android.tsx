@@ -9,10 +9,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: -99,
-    borderColor: '#aaa',
-    borderTopWidth: 1 / ratio,
-    borderBottomWidth: 1 / ratio,
-  } as any,
+    backgroundColor: '#ececec',
+    borderRadius:8
+  },
 
   scrollView: {
     height: 0,
@@ -20,15 +19,16 @@ const styles = StyleSheet.create({
 
   selectedItemText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '500',
     color: '#000',
-  } as any,
+  },
 
   itemText: {
     fontSize: 20,
+    height: 40,
     color: '#aaa',
     textAlign: 'center',
-  } as any,
+  },
 })
 
 export interface IPickerProp {
@@ -46,7 +46,10 @@ class Picker extends React.Component<IPickerProp & PickerProps, any> {
 
   onItemLayout = (e: any) => {
     const { height, width } = e.nativeEvent.layout
-    // console.log('onItemLayout', height);
+    const { itemStyle } = this.props
+    const itemStyleFlatten = StyleSheet.flatten(itemStyle) || {}
+    const fontSize = itemStyleFlatten.fontSize || styles.itemText.fontSize
+
     if (this.itemHeight !== height || this.itemWidth !== width) {
       this.itemWidth = width
       if (this.indicatorRef) {
@@ -54,7 +57,7 @@ class Picker extends React.Component<IPickerProp & PickerProps, any> {
           style: [
             styles.indicator,
             {
-              top: height * 3,
+              top:height * 3 + (fontSize / 2) - (height / 2),
               height,
               width,
             },
@@ -137,9 +140,11 @@ class Picker extends React.Component<IPickerProp & PickerProps, any> {
     const { children, itemStyle, selectedValue, style } = this.props
     const items = React.Children.map(children, (item: any, index) => {
       const totalStyle = [styles.itemText]
+
       if (selectedValue === item.props.value) {
         totalStyle.push(styles.selectedItemText)
       }
+
       return (
         <View
           ref={(el) => ((this as any)[`item${index}`] = el)}
